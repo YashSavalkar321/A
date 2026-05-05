@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+:root {
+	color-scheme: dark;
+	font-family: 'Outfit', 'Space Grotesk', sans-serif;
+	background:
+		radial-gradient(circle at 12% 10%, rgba(255, 196, 107, 0.12), transparent 24%),
+		radial-gradient(circle at 85% 16%, rgba(128, 214, 255, 0.1), transparent 28%),
+		linear-gradient(180deg, #120b08 0%, #20120a 48%, #18110d 100%);
+	color: #fff0da;
+}
+
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	margin: 0;
+	background: inherit;
+	font-family: inherit;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+button,
+input {
+	font: inherit;
+}

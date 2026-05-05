@@ -1,0 +1,91 @@
+<div class="canvas">
+  <div class="grain"></div>
+
+  <header class="hero">
+    <p class="tag">ADS Assignment 11</p>
+    <h1>Cora Research Graph Studio</h1>
+    <p class="subtitle">
+      Explore connected papers with Neo4j-powered graph queries from one redesigned workspace.
+    </p>
+    <div class="pills">
+      <span>Angular SSR</span>
+      <span>Neo4j Backend API</span>
+      <span>3 Query Workflows</span>
+    </div>
+  </header>
+
+  <main class="query-grid">
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Citation Path</h2>
+        <p>Checks if Paper A can reach Paper B by CITES relationships.</p>
+      </div>
+
+      <label class="field">
+        <span>Paper A Title</span>
+        <input #paperA type="text" placeholder="Research Paper 31336" />
+      </label>
+
+      <label class="field">
+        <span>Paper B Title</span>
+        <input #paperB type="text" placeholder="Research Paper 35" />
+      </label>
+
+      <button class="cta warm" [disabled]="loadingA" (click)="checkCitation(paperA.value, paperB.value)">
+        {{ loadingA ? 'Checking...' : 'Check Path' }}
+      </button>
+
+      <div class="output" [class.empty]="!queryA_Result">
+        {{ queryA_Result || 'Citation result will appear here.' }}
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head">
+        <h2>Classification Finder</h2>
+        <p>Returns the classification attached to a paper.</p>
+      </div>
+
+      <label class="field">
+        <span>Paper Title</span>
+        <input #classTitle type="text" placeholder="Research Paper 31336" />
+      </label>
+
+      <button class="cta cool" [disabled]="loadingB" (click)="getClassification(classTitle.value)">
+        {{ loadingB ? 'Searching...' : 'Get Classification' }}
+      </button>
+
+      <div class="output" [class.empty]="!queryB_Result">
+        {{ queryB_Result || 'Classification output will appear here.' }}
+      </div>
+    </section>
+
+    <section class="panel panel-wide">
+      <div class="panel-head">
+        <h2>Author Publications</h2>
+        <p>Lists all paper titles written by the selected author.</p>
+      </div>
+
+      <label class="field">
+        <span>Author Name</span>
+        <input #authorName type="text" placeholder="Author 1" />
+      </label>
+
+      <button class="cta lime" [disabled]="loadingC" (click)="getAuthorPapers(authorName.value)">
+        {{ loadingC ? 'Loading...' : 'Get Papers' }}
+      </button>
+
+      <div class="output list" [class.empty]="queryC_Result.length === 0">
+        @if (queryC_Result.length === 0) {
+          <span>Author papers will appear here.</span>
+        } @else {
+          <ul>
+            @for (paper of queryC_Result; track paper) {
+              <li>{{ paper }}</li>
+            }
+          </ul>
+        }
+      </div>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,140 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { @apply scroll-smooth; }
+
+  body {
+    @apply font-sans bg-slate-50 text-slate-900 antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+
+  h1 { @apply text-3xl font-bold tracking-tight; }
+  h2 { @apply text-2xl font-semibold tracking-tight; }
+  h3 { @apply text-xl font-semibold; }
+}
+
+@layer components {
+  /* ── Buttons ─────────────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium
+           text-sm transition-all duration-200 disabled:opacity-50
+           disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  .btn-primary {
+    @apply btn bg-navy-800 text-white hover:bg-navy-900
+           focus:ring-navy-600 shadow-sm hover:shadow-md;
+  }
+  .btn-secondary {
+    @apply btn bg-slate-100 text-slate-800 hover:bg-slate-200
+           focus:ring-slate-400 border border-slate-200;
+  }
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+  .btn-ghost {
+    @apply btn text-slate-600 hover:bg-slate-100 hover:text-slate-900
+           focus:ring-slate-300;
+  }
+  .btn-sm { @apply !px-3 !py-1.5 !text-xs !rounded-lg; }
+  .btn-lg { @apply !px-6 !py-3 !text-base; }
+
+  /* ── Cards ───────────────────────────────────────────────── */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-200
+           hover:shadow-md transition-shadow duration-200;
+  }
+  .card-header {
+    @apply px-6 py-4 border-b border-slate-100 flex items-center justify-between;
+  }
+  .card-body { @apply p-6; }
+
+  /* ── Form Inputs ─────────────────────────────────────────── */
+  .input {
+    @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-sm
+           placeholder:text-slate-400 shadow-sm transition
+           focus:border-navy-600 focus:outline-none focus:ring-2
+           focus:ring-navy-200 disabled:cursor-not-allowed disabled:bg-slate-50;
+  }
+  .input-label {
+    @apply block text-sm font-medium text-slate-700 mb-1;
+  }
+  .input-error {
+    @apply border-red-400 focus:ring-red-200 focus:border-red-500;
+  }
+  .error-msg { @apply text-xs text-red-600 mt-1; }
+
+  /* ── Badges ──────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+  .badge-navy   { @apply badge bg-navy-100 text-navy-800; }
+  .badge-green  { @apply badge bg-emerald-100 text-emerald-800; }
+  .badge-red    { @apply badge bg-red-100 text-red-800; }
+  .badge-blue   { @apply badge bg-sky-100 text-sky-800; }
+  .badge-amber  { @apply badge bg-amber-100 text-amber-800; }
+  .badge-slate  { @apply badge bg-slate-100 text-slate-700; }
+
+  /* ── Tables ──────────────────────────────────────────────── */
+  .table-base {
+    @apply w-full text-sm text-left;
+  }
+  .table-base thead { @apply bg-slate-50 text-slate-500 text-xs uppercase tracking-wider; }
+  .table-base th    { @apply px-4 py-3 font-medium; }
+  .table-base td    { @apply px-4 py-3 border-t border-slate-100; }
+  .table-base tbody tr { @apply hover:bg-slate-50/70 transition-colors; }
+
+  /* ── Alerts ──────────────────────────────────────────────── */
+  .alert {
+    @apply flex items-start gap-3 p-4 rounded-xl text-sm;
+  }
+  .alert-error   { @apply alert bg-red-50 text-red-800 border border-red-200; }
+  .alert-success { @apply alert bg-emerald-50 text-emerald-800 border border-emerald-200; }
+  .alert-info    { @apply alert bg-sky-50 text-sky-800 border border-sky-200; }
+  .alert-warn    { @apply alert bg-amber-50 text-amber-800 border border-amber-200; }
+
+  /* ── Page Layout ─────────────────────────────────────────── */
+  .page-header {
+    @apply flex items-center justify-between mb-6;
+  }
+  .page-title { @apply text-2xl font-bold text-slate-900; }
+
+  /* ── Stat Cards ──────────────────────────────────────────── */
+  .stat-card {
+    @apply card p-5 flex items-center gap-4;
+  }
+  .stat-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center text-xl flex-shrink-0;
+  }
+
+  /* ── Loading ─────────────────────────────────────────────── */
+  .spinner {
+    @apply h-8 w-8 rounded-full border-4 border-slate-200
+           border-t-navy-700 animate-spin;
+  }
+  .loading-overlay {
+    @apply flex flex-col items-center justify-center min-h-[200px] gap-3;
+  }
+
+  /* ── Exam Question Palette ───────────────────────────────── */
+  .q-btn {
+    @apply w-9 h-9 rounded-lg text-xs font-semibold transition-all duration-150
+           border-2 hover:scale-110 cursor-pointer;
+  }
+  .q-btn-unanswered { @apply border-slate-300 bg-white text-slate-500; }
+  .q-btn-answered   { @apply border-emerald-400 bg-emerald-100 text-emerald-800; }
+  .q-btn-review     { @apply border-amber-400 bg-amber-100 text-amber-800; }
+  .q-btn-current    { @apply border-navy-700 bg-navy-700 text-white shadow-md; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+}
+
+/* KaTeX overrides */
+.katex-display { overflow-x: auto; overflow-y: hidden; }

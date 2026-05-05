@@ -1,0 +1,107 @@
+<!-- Toast notification -->
+<div class="toast" [class.toast--visible]="toast.show" [class.toast--error]="toast.type === 'error'">
+  <span class="toast__icon">{{ toast.type === 'error' ? '✗' : '✓' }}</span>
+  {{ toast.message }}
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header__inner">
+    <h1 class="header__title">
+      <span class="header__logo">⛁</span>
+      Student Records
+    </h1>
+    <span class="header__badge">PRN 23510027</span>
+  </div>
+</header>
+
+<!-- Main content -->
+<main class="main">
+
+  <!-- Database tab switcher -->
+  <div class="tabs">
+    <button class="tab" [class.tab--active]="activeDb === 'mongo'" (click)="switchDb('mongo')" id="tab-mongo">
+      <span class="tab__icon">🍃</span>
+      MongoDB
+    </button>
+    <button class="tab" [class.tab--active]="activeDb === 'cassandra'" (click)="switchDb('cassandra')" id="tab-cassandra">
+      <span class="tab__icon">👁</span>
+      CassandraDB
+    </button>
+    <div class="tabs__indicator" [class.tabs__indicator--right]="activeDb === 'cassandra'"></div>
+  </div>
+
+  <!-- Form card -->
+  <section class="glass-card form-card">
+    <h2 class="form-card__title">{{ editingId ? 'Edit Student' : 'Add New Student' }}</h2>
+
+    <div class="form-row">
+      <div class="form-field">
+        <label class="form-label" for="inp-name">Name</label>
+        <input class="form-input" id="inp-name" [(ngModel)]="form.name" placeholder="John Doe" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="inp-email">Email</label>
+        <input class="form-input" id="inp-email" [(ngModel)]="form.email" placeholder="john@example.com" />
+      </div>
+      <div class="form-field">
+        <label class="form-label" for="inp-course">Course</label>
+        <input class="form-input" id="inp-course" [(ngModel)]="form.course" placeholder="B.Tech CS" />
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn btn--primary" id="btn-save" (click)="saveStudent()">
+        {{ editingId ? '✏ Update' : '＋ Create' }}
+      </button>
+      <button class="btn btn--ghost" *ngIf="editingId" (click)="cancelEdit()">Cancel</button>
+      <button class="btn btn--ghost" id="btn-refresh" (click)="fetchActive()">↻ Refresh</button>
+    </div>
+  </section>
+
+  <!-- Table card -->
+  <section class="glass-card table-card">
+    <h2 class="table-card__title">
+      {{ activeDb === 'mongo' ? 'MongoDB' : 'CassandraDB' }} Records
+      <span class="table-card__count">{{ students.length }}</span>
+    </h2>
+
+    <!-- Loading spinner -->
+    <div class="spinner-wrap" *ngIf="loading">
+      <div class="spinner"></div>
+      <p class="spinner-text">Loading records…</p>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty" *ngIf="!loading && students.length === 0">
+      <div class="empty__icon">📭</div>
+      <p class="empty__text">No students found in {{ activeDb === 'mongo' ? 'MongoDB' : 'CassandraDB' }}.</p>
+      <p class="empty__hint">Use the form above to add the first record.</p>
+    </div>
+
+    <!-- Data table -->
+    <div class="table-wrap" *ngIf="!loading && students.length > 0">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Course</th>
+            <th class="th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let s of students; let i = index" class="data-row" [style.--row-delay]="i * 40 + 'ms'">
+            <td class="td-name">{{ s.name }}</td>
+            <td class="td-email">{{ s.email }}</td>
+            <td><span class="badge-course">{{ s.course }}</span></td>
+            <td class="td-actions">
+              <button class="btn-icon btn-icon--edit" title="Edit" (click)="startEdit(s)">✎</button>
+              <button class="btn-icon btn-icon--delete" title="Delete" (click)="deleteStudent(s)">🗑</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

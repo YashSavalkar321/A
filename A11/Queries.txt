@@ -1,0 +1,115 @@
+// =======================================
+// STEP 0: RESET DATABASE
+// =======================================
+MATCH (n) DETACH DELETE n;
+
+
+// =======================================
+// STEP 1: CREATE CONSTRAINTS
+// =======================================
+CREATE CONSTRAINT author_id IF NOT EXISTS
+FOR (a:Author) REQUIRE a.author_id IS UNIQUE;
+
+CREATE CONSTRAINT paper_id IF NOT EXISTS
+FOR (p:Paper) REQUIRE p.paper_id IS UNIQUE;
+
+CREATE CONSTRAINT class_id IF NOT EXISTS
+FOR (c:Classification) REQUIRE c.class_id IS UNIQUE;
+
+
+// =======================================
+// STEP 2: LOAD NODES
+// =======================================
+
+// AUTHORS
+LOAD CSV WITH HEADERS FROM 'file:///authors.csv' AS row
+MERGE (a:Author {author_id: row.author_id})
+SET a.name = row.name;
+
+
+// PAPERS
+LOAD CSV WITH HEADERS FROM 'file:///papers.csv' AS row
+MERGE (p:Paper {paper_id: row.paper_id})
+SET p.title = row.title;
+
+
+// CLASSIFICATION
+LOAD CSV WITH HEADERS FROM 'file:///classification.csv' AS row
+MERGE (c:Classification {class_id: row.class_id})
+SET c.name = row.name;
+
+
+// =======================================
+// STEP 3: CREATE RELATIONSHIPS
+// =======================================
+
+// AUTHOR -> PAPER
+LOAD CSV WITH HEADERS FROM 'file:///wrote.csv' AS row
+MATCH (a:Author {author_id: row.author_id})
+MATCH (p:Paper {paper_id: row.paper_id})
+MERGE (a)-[:WROTE]->(p);
+
+
+// PAPER -> CLASSIFICATION
+LOAD CSV WITH HEADERS FROM 'file:///belongs_to.csv' AS row
+MATCH (p:Paper {paper_id: row.paper_id})
+MATCH (c:Classification {class_id: row.class_id})
+MERGE (p)-[:BELONGS_TO]->(c);
+
+
+// PAPER -> PAPER (CITATIONS)
+LOAD CSV WITH HEADERS FROM 'file:///cites.csv' AS row
+MATCH (p1:Paper {paper_id: row.citing_paper_id})
+MATCH (p2:Paper {paper_id: row.cited_paper_id})
+MERGE (p1)-[:CITES]->(p2);
+
+
+// =======================================
+// STEP 4: VERIFY DATA
+// =======================================
+
+// NODE COUNT
+MATCH (n) RETURN labels(n), count(n);
+
+// RELATIONSHIP COUNT
+MATCH ()-[r]->() RETURN type(r), count(r);
+
+
+// =======================================
+// STEP 5: TEST GRAPH
+// =======================================
+MATCH (a:Author)-[:WROTE]->(p:Paper)
+RETURN a, p LIMIT 25;
+
+
+// =======================================
+// STEP 6: ASSIGNMENT QUERIES
+// =======================================
+
+// (a) CITATION CHECK
+MATCH (a:Paper {paper_id:"35"})
+MATCH (b:Paper {paper_id:"1033"})
+OPTIONAL MATCH path = shortestPath((a)-[:CITES*..5]->(b))
+RETURN 
+CASE 
+  WHEN path IS NULL THEN "No citation path"
+  ELSE "Path exists"
+END AS result,
+path;
+
+
+// (b) CLASSIFICATION
+MATCH (p:Paper {paper_id:"35"})-[:BELONGS_TO]->(c)
+RETURN c.name;
+
+
+// (c) TOP AUTHORS
+MATCH (a:Author)-[:WROTE]->(p)
+RETURN a.name, count(p) AS total
+ORDER BY total DESC LIMIT 10;
+
+
+// =======================================
+// FINAL CHECK
+// =======================================
+MATCH ()-[r]->() RETURN count(r);
