@@ -1,0 +1,252 @@
+@use '@angular/material' as mat;
+@use 'ngx-toastr/toastr';
+
+/* ─── Google Fonts ──────────────────────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/icon?family=Material+Icons');
+
+/* ─── ngx-toastr base loaded via @use above ─────────────────────────────────── */
+
+/* ─── Design Tokens ─────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds */
+  --clr-bg:           #f4f2ff;
+  --clr-surface:      #ffffff;
+  --clr-surface-2:    #faf9ff;
+  --clr-border:       #e4e0ff;
+  --clr-border-light: #ede9ff;
+
+  /* Text */
+  --clr-text:         #1a1340;
+  --clr-text-muted:   #6b7280;
+  --clr-text-light:   #9ca3af;
+
+  /* Brand Palette — Violet/Purple */
+  --clr-primary:        #7c3aed;
+  --clr-primary-light:  #ede9fe;
+  --clr-primary-dark:   #5b21b6;
+  --clr-primary-glow:   rgba(124,58,237,0.18);
+
+  /* Secondary — Cyan */
+  --clr-secondary:      #0891b2;
+  --clr-secondary-light:#e0f2fe;
+
+  /* Accent — Rose */
+  --clr-accent:         #e11d48;
+
+  /* State */
+  --clr-success:      #059669;
+  --clr-warning:      #d97706;
+  --clr-error:        #dc2626;
+  --clr-info:         #0284c7;
+
+  /* Shadows */
+  --shadow-xs:   0 1px 2px rgba(124,58,237,.06);
+  --shadow-sm:   0 1px 4px rgba(124,58,237,.08), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:   0 4px 16px rgba(124,58,237,.10), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:   0 10px 32px rgba(124,58,237,.14), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-violet: 0 8px 24px rgba(124,58,237,.35);
+
+  /* Radius */
+  --radius-xs:  4px;
+  --radius-sm:  8px;
+  --radius-md:  12px;
+  --radius-lg:  18px;
+  --radius-xl:  24px;
+  --radius-2xl: 32px;
+
+  /* Layout */
+  --sidebar-w:    268px;
+  --sidebar-mini: 72px;
+  --toolbar-h:    64px;
+}
+
+/* ─── Angular Material Theme ────────────────────────────────────────────────── */
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$violet-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: Inter,
+    density: 0,
+  ));
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--clr-bg);
+  font-family: 'Plus Jakarta Sans', 'Inter', 'Helvetica Neue', sans-serif;
+  color: var(--clr-text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body { color-scheme: light; }
+a { text-decoration: none; color: inherit; }
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #a78bfa; }
+
+/* ─── Material Overrides ────────────────────────────────────────────────────── */
+.mdc-dialog__surface { border-radius: var(--radius-lg) !important; }
+.mat-mdc-card {
+  box-shadow: var(--shadow-sm) !important;
+  border: 1px solid var(--clr-border);
+}
+
+/* ─── Custom Toast ──────────────────────────────────────────────────────────── */
+.uni-toast {
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  font-size: 0.875rem !important;
+  padding: 14px 16px 14px 50px !important;
+  min-width: 320px !important;
+  max-width: 420px !important;
+  border: 1px solid rgba(255,255,255,0.2) !important;
+
+  .toast-title { font-weight: 700 !important; font-size: 0.875rem !important; margin-bottom: 2px; }
+  .toast-message { font-weight: 400 !important; opacity: 0.92; }
+
+  &.toast-success { background: linear-gradient(135deg, #059669, #10b981) !important; color: #fff !important; }
+  &.toast-error   { background: linear-gradient(135deg, #dc2626, #ef4444) !important; color: #fff !important; }
+  &.toast-info    { background: linear-gradient(135deg, #7c3aed, #a855f7) !important; color: #fff !important; }
+  &.toast-warning { background: linear-gradient(135deg, #d97706, #f59e0b) !important; color: #fff !important; }
+
+  .toast-close-button {
+    color: rgba(255,255,255,0.8) !important;
+    font-size: 1rem !important;
+    top: 8px !important;
+    right: 10px !important;
+    &:hover { color: #fff !important; }
+  }
+
+  .toast-progress {
+    bottom: 0 !important;
+    height: 3px !important;
+    background: rgba(255,255,255,0.45) !important;
+    border-radius: 0 0 var(--radius-md) var(--radius-md) !important;
+  }
+
+  &::before {
+    font-family: 'Material Icons';
+    font-size: 1.2rem;
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: rgba(255,255,255,0.9);
+  }
+  &.toast-success::before { content: 'check_circle'; }
+  &.toast-error::before   { content: 'error'; }
+  &.toast-info::before    { content: 'info'; }
+  &.toast-warning::before { content: 'warning'; }
+}
+
+.toast-container { top: 80px !important; right: 16px !important; }
+
+/* ─── Shared Form Input Styles ──────────────────────────────────────────────── */
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.field-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--clr-text);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.field-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #faf9ff;
+  border: 1.5px solid var(--clr-border);
+  border-radius: var(--radius-md);
+  padding: 11px 14px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+
+  &.focused {
+    border-color: var(--clr-primary);
+    background: #fff;
+    box-shadow: 0 0 0 3px var(--clr-primary-glow);
+  }
+
+  &.invalid {
+    border-color: var(--clr-error);
+    box-shadow: 0 0 0 3px rgba(220,38,38,0.10);
+  }
+
+  mat-icon.fi {
+    font-size: 18px !important;
+    width: 18px !important;
+    height: 18px !important;
+    color: #a78bfa;
+    flex-shrink: 0;
+  }
+}
+
+.field-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--clr-text);
+  &::placeholder { color: #c4b5fd; }
+}
+
+.field-error {
+  font-size: 0.75rem;
+  color: var(--clr-error);
+  margin-top: 1px;
+}
+
+/* ─── Gradient Button ───────────────────────────────────────────────────────── */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 24px;
+  background: linear-gradient(135deg, var(--clr-primary), #a855f7);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.92rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: var(--shadow-violet);
+
+  &:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--clr-primary-dark), var(--clr-primary));
+    box-shadow: 0 12px 28px rgba(124,58,237,0.45);
+    transform: translateY(-2px);
+  }
+  &:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+  mat-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; }
+}
+
+/* ─── Page layout util ──────────────────────────────────────────────────────── */
+.ent-card {
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}

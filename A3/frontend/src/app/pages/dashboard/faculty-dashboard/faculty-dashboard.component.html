@@ -1,0 +1,219 @@
+<div class="dashboard">
+
+  <!-- ── Hero Banner ─────────────────────────────────────────────────────── -->
+  <div class="hero-banner faculty-hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-content">
+      <div class="hero-icon"><mat-icon>cast_for_education</mat-icon></div>
+      <div>
+        <h1 class="hero-title">Faculty Dashboard</h1>
+        <p class="hero-sub" *ngIf="data?.profile">
+          {{data!.profile!.name}} &middot; {{data!.profile!.dept_name}}
+        </p>
+        <p class="hero-sub" *ngIf="!data?.profile && !loading">Academic operations &amp; teaching workflow</p>
+      </div>
+    </div>
+    <button mat-flat-button class="hero-btn" [matMenuTriggerFor]="exportMenu" [disabled]="exporting">
+      <mat-icon>{{exporting ? 'hourglass_empty' : 'download'}}</mat-icon> {{exporting ? 'Exporting…' : 'Export Report'}}
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportReport('csv')"><mat-icon>description</mat-icon> Download CSV</button>
+      <button mat-menu-item (click)="exportReport('pdf')"><mat-icon>picture_as_pdf</mat-icon> Download PDF</button>
+    </mat-menu>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  <div *ngIf="error" class="error-msg"><mat-icon>error</mat-icon> {{error}}</div>
+
+  <ng-container *ngIf="data">
+
+    <!-- ── Summary Cards ───────────────────────────────────────────────── -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#7c3aed,#a855f7)"><mat-icon>class</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.gradeableSections.length}}</div>
+          <div class="summary-label">Sections Teaching</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#0891b2,#06b6d4)"><mat-icon>groups</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.studentRoster.length}}</div>
+          <div class="summary-label">Students Enrolled</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#059669,#10b981)"><mat-icon>supervisor_account</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.advisees.length}}</div>
+          <div class="summary-label">Advisees</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Tabs ────────────────────────────────────────────────────────── -->
+    <mat-tab-group animationDuration="200ms" class="dash-tabs">
+
+      <!-- TAB: Teaching Schedule -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>schedule</mat-icon>&nbsp;Teaching Schedule
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="data.schedule.length; else noSchedule">
+            <table mat-table [dataSource]="data.schedule" class="dash-table">
+              <ng-container matColumnDef="course_id">
+                <th mat-header-cell *matHeaderCellDef>Course</th>
+                <td mat-cell *matCellDef="let r">{{r.course_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let r">{{r.course_title}}</td>
+              </ng-container>
+              <ng-container matColumnDef="sec_id">
+                <th mat-header-cell *matHeaderCellDef>Section</th>
+                <td mat-cell *matCellDef="let r">{{r.sec_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="semester_year">
+                <th mat-header-cell *matHeaderCellDef>Semester</th>
+                <td mat-cell *matCellDef="let r">{{r.semester}} {{r.year}}</td>
+              </ng-container>
+              <ng-container matColumnDef="day">
+                <th mat-header-cell *matHeaderCellDef>Day</th>
+                <td mat-cell *matCellDef="let r">{{dayName(r.day)}}</td>
+              </ng-container>
+              <ng-container matColumnDef="time">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let r">{{r.start_time}} – {{r.end_time}}</td>
+              </ng-container>
+              <ng-container matColumnDef="room">
+                <th mat-header-cell *matHeaderCellDef>Room</th>
+                <td mat-cell *matCellDef="let r">{{r.building}} {{r.room_number}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="scheduleCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: scheduleCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noSchedule>
+            <div class="empty-state"><mat-icon>event_busy</mat-icon><span>No teaching schedule found</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+      <!-- TAB: Student Roster & Grades -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>grading</mat-icon>&nbsp;Student Roster &amp; Grades
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="data.studentRoster.length; else noRoster">
+            <table mat-table [dataSource]="data.studentRoster" class="dash-table">
+              <ng-container matColumnDef="student_id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let r">{{r.student_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="student_name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let r">{{r.student_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="dept_name">
+                <th mat-header-cell *matHeaderCellDef>Department</th>
+                <td mat-cell *matCellDef="let r">{{r.dept_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_title">
+                <th mat-header-cell *matHeaderCellDef>Course</th>
+                <td mat-cell *matCellDef="let r">{{r.course_title}}</td>
+              </ng-container>
+              <ng-container matColumnDef="semester_year">
+                <th mat-header-cell *matHeaderCellDef>Semester</th>
+                <td mat-cell *matCellDef="let r">{{r.semester}} {{r.year}}</td>
+              </ng-container>
+              <ng-container matColumnDef="grade">
+                <th mat-header-cell *matHeaderCellDef>Grade</th>
+                <td mat-cell *matCellDef="let r">
+                  <ng-container *ngIf="editingGrade[rosterKey(r)] === undefined">
+                    <span class="grade-chip" [class.pending]="!r.grade">{{r.grade || 'In Progress'}}</span>
+                  </ng-container>
+                  <mat-form-field *ngIf="editingGrade[rosterKey(r)] !== undefined" appearance="outline" class="grade-field">
+                    <mat-select [(ngModel)]="editingGrade[rosterKey(r)]">
+                      <mat-option *ngFor="let g of gradeOptions" [value]="g">{{g}}</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef>Actions</th>
+                <td mat-cell *matCellDef="let r">
+                  <ng-container *ngIf="editingGrade[rosterKey(r)] === undefined">
+                    <button mat-icon-button color="primary" (click)="startEditGrade(r)" matTooltip="Edit Grade">
+                      <mat-icon>edit</mat-icon>
+                    </button>
+                  </ng-container>
+                  <ng-container *ngIf="editingGrade[rosterKey(r)] !== undefined">
+                    <button mat-icon-button color="primary" (click)="saveGrade(r)" [disabled]="savingGrade[rosterKey(r)]">
+                      <mat-icon>check</mat-icon>
+                    </button>
+                    <button mat-icon-button (click)="cancelEditGrade(r)">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </ng-container>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="rosterCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: rosterCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noRoster>
+            <div class="empty-state"><mat-icon>person_off</mat-icon><span>No students enrolled in your sections</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+      <!-- TAB: Advisees -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>supervisor_account</mat-icon>&nbsp;Advisees
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="data.advisees.length; else noAdvisees">
+            <table mat-table [dataSource]="data.advisees" class="dash-table">
+              <ng-container matColumnDef="student_id">
+                <th mat-header-cell *matHeaderCellDef>ID</th>
+                <td mat-cell *matCellDef="let r">{{r.student_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="student_name">
+                <th mat-header-cell *matHeaderCellDef>Name</th>
+                <td mat-cell *matCellDef="let r">{{r.student_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="dept_name">
+                <th mat-header-cell *matHeaderCellDef>Department</th>
+                <td mat-cell *matCellDef="let r">{{r.dept_name}}</td>
+              </ng-container>
+              <ng-container matColumnDef="tot_cred">
+                <th mat-header-cell *matHeaderCellDef>Credits</th>
+                <td mat-cell *matCellDef="let r">{{r.tot_cred}}</td>
+              </ng-container>
+              <ng-container matColumnDef="address">
+                <th mat-header-cell *matHeaderCellDef>Address</th>
+                <td mat-cell *matCellDef="let r">{{r.address || '—'}}</td>
+              </ng-container>
+              <ng-container matColumnDef="mobile_no">
+                <th mat-header-cell *matHeaderCellDef>Mobile No</th>
+                <td mat-cell *matCellDef="let r">{{r.mobile_no || '—'}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="adviseeCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: adviseeCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noAdvisees>
+            <div class="empty-state"><mat-icon>person_off</mat-icon><span>No advisees assigned</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </ng-container>
+</div>

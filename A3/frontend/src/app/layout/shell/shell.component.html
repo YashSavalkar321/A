@@ -1,0 +1,111 @@
+<div class="shell-layout" [class.collapsed]="!sidenavOpen">
+
+  <!-- ── Sidebar ─────────────────────────────────────────────────── -->
+  <aside class="sidebar">
+
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="brand-text" *ngIf="sidenavOpen">
+        <span class="brand-name">UniMIS</span>
+        <span class="brand-tagline">University Portal</span>
+      </div>
+    </div>
+
+    <!-- Nav Groups -->
+    <nav class="nav-section">
+      <ng-container *ngFor="let group of navGroups">
+        <ng-container *ngIf="canShowGroup(group)">
+          <span class="nav-group-label" *ngIf="sidenavOpen">{{group.groupLabel}}</span>
+          <div class="nav-group-divider" *ngIf="!sidenavOpen"></div>
+          <ng-container *ngFor="let item of group.items">
+            <ng-container *ngIf="canShowItem(item)">
+              <a class="nav-item" [routerLink]="resolveRoute(item)" routerLinkActive="active"
+                 [matTooltip]="!sidenavOpen ? item.label : ''" matTooltipPosition="right">
+                <span class="nav-icon"><mat-icon>{{item.icon}}</mat-icon></span>
+                <span class="nav-label" *ngIf="sidenavOpen">{{item.label}}</span>
+              </a>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </nav>
+
+    <!-- User Footer -->
+    <div class="sidebar-footer" *ngIf="user$ | async as user">
+      <div class="user-block">
+        <div class="user-avatar"
+             [matTooltip]="!sidenavOpen ? (user.username + ' · ' + user.role) : ''"
+             matTooltipPosition="right">
+          {{user.username[0].toUpperCase()}}
+        </div>
+        <div class="user-meta" *ngIf="sidenavOpen">
+          <span class="user-name">{{user.username}}</span>
+          <span class="role-pill" [class]="'role-'+user.role">{{user.role}}</span>
+        </div>
+        <button class="logout-mini" *ngIf="sidenavOpen" (click)="logout()"
+                matTooltip="Sign out" matTooltipPosition="right">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Main Area ────────────────────────────────────────────────── -->
+  <div class="main-area">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <button class="toggle-btn" (click)="sidenavOpen = !sidenavOpen"
+              [matTooltip]="sidenavOpen ? 'Collapse sidebar' : 'Expand sidebar'">
+        <mat-icon>{{sidenavOpen ? 'menu_open' : 'menu'}}</mat-icon>
+      </button>
+
+      <div class="topbar-brand-mini" *ngIf="!sidenavOpen">UniMIS</div>
+
+      <div class="topbar-spacer"></div>
+
+      <div class="topbar-actions" *ngIf="user$ | async as user">
+
+        <!-- Role Badge -->
+        <div class="topbar-role-badge role-{{user.role}}">
+          <mat-icon>{{user.role === 'admin' ? 'admin_panel_settings' : user.role === 'faculty' ? 'cast_for_education' : 'school'}}</mat-icon>
+          <span>{{user.role | titlecase}}</span>
+        </div>
+
+        <!-- User menu trigger -->
+        <button class="topbar-user-btn" [matMenuTriggerFor]="userMenu" matTooltip="Account options">
+          <div class="topbar-avatar">{{user.username[0].toUpperCase()}}</div>
+          <span class="topbar-username">{{user.username}}</span>
+          <mat-icon class="chevron">expand_more</mat-icon>
+        </button>
+      </div>
+
+      <mat-menu #userMenu="matMenu" class="user-menu-panel">
+        <ng-container *ngIf="user$ | async as user">
+          <div class="menu-header" mat-menu-item disabled>
+            <mat-icon>person</mat-icon>
+            <div class="menu-header-info">
+              <span class="menu-username">{{user.username}}</span>
+              <span class="menu-role">{{user.role | titlecase}}</span>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+        </ng-container>
+        <button mat-menu-item (click)="logout()">
+          <mat-icon color="warn">logout</mat-icon>
+          <span>Sign Out</span>
+        </button>
+      </mat-menu>
+    </header>
+
+    <!-- Page Content -->
+    <main class="page-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>
+

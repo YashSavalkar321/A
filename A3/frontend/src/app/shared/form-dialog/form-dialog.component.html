@@ -1,0 +1,50 @@
+<div class="dlg-header">
+  <div class="dlg-icon">
+    <mat-icon>{{icon}}</mat-icon>
+  </div>
+  <div>
+    <h2 class="dlg-title">{{title}}</h2>
+    <p class="dlg-subtitle">{{isEdit ? 'Update the record details below' : 'Fill in the information to create a new record'}}</p>
+  </div>
+  <button mat-icon-button mat-dialog-close class="dlg-close" matTooltip="Close">
+    <mat-icon>close</mat-icon>
+  </button>
+</div>
+
+<mat-dialog-content class="dlg-content">
+  <form [formGroup]="form" class="dlg-form">
+    <ng-container *ngFor="let field of fields">
+
+      <!-- Text / number / time -->
+      <mat-form-field *ngIf="field.type !== 'select'" appearance="outline" class="dlg-field">
+        <mat-label>{{field.label}}</mat-label>
+        <input matInput
+               [formControlName]="field.key"
+               [type]="field.type === 'number' ? 'number' : (field.type === 'time' ? 'time' : 'text')"
+               [placeholder]="field.placeholder || field.label"
+               [min]="field.min ?? null">
+        <mat-error *ngIf="form.get(field.key)?.hasError('required')">{{field.label}} is required</mat-error>
+      </mat-form-field>
+
+      <!-- Select -->
+      <mat-form-field *ngIf="field.type === 'select'" appearance="outline" class="dlg-field">
+        <mat-label>{{field.label}}</mat-label>
+        <mat-select [formControlName]="field.key">
+          <mat-option *ngFor="let opt of field.options" [value]="opt">{{opt}}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get(field.key)?.hasError('required')">{{field.label}} is required</mat-error>
+      </mat-form-field>
+
+    </ng-container>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="dlg-actions">
+  <button mat-stroked-button mat-dialog-close class="btn-cancel">
+    Cancel
+  </button>
+  <button mat-flat-button color="primary" (click)="submit()" class="btn-submit">
+    <mat-icon>{{isEdit ? 'save' : 'add_circle_outline'}}</mat-icon>
+    {{isEdit ? 'Save Changes' : 'Create Record'}}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,210 @@
+.roles-page {
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.roles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-icon-wrap {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    mat-icon { font-size: 28px; width: 28px; height: 28px; }
+  }
+
+  .page-title { margin: 0; font-size: 1.5rem; font-weight: 600; }
+  .record-count { font-size: 0.85rem; color: #888; }
+
+  .header-actions { display: flex; gap: 8px; align-items: center; }
+}
+
+.roles-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 24px;
+  align-items: start;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roles-list-card, .perm-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+}
+
+.section-title {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+// Role items
+.role-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background .15s;
+  border: 1px solid transparent;
+
+  &:hover { background: #f3f4f6; }
+  &.selected {
+    background: #ede9fe;
+    border-color: #8b5cf6;
+  }
+
+  .role-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .role-name {
+    font-weight: 600;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .system-badge {
+      font-size: 15px;
+      width: 15px;
+      height: 15px;
+      color: #9ca3af;
+    }
+  }
+
+  .role-desc {
+    font-size: 0.8rem;
+    color: #6b7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+  }
+
+  .role-users {
+    font-size: 0.75rem;
+    color: #9ca3af;
+  }
+
+  .role-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity .15s;
+
+    button { transform: scale(0.85); }
+    .btn-delete { color: #ef4444; }
+  }
+
+  &:hover .role-actions { opacity: 1; }
+}
+
+// Permission matrix
+.perm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+
+  .section-title { margin: 0; }
+}
+
+.perm-table-wrap {
+  overflow-x: auto;
+}
+
+.perm-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  th, td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #6b7280;
+    background: #fafafa;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  .resource-col {
+    min-width: 160px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .resource-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #8b5cf6;
+    }
+  }
+
+  thead .resource-col {
+    display: table-cell;
+  }
+
+  .action-col {
+    text-align: center;
+    width: 100px;
+  }
+
+  tbody tr:hover {
+    background: #f9fafb;
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 32px 16px;
+  color: #9ca3af;
+
+  mat-icon {
+    font-size: 48px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+  }
+
+  p { margin: 0; }
+}
+
+.perm-empty {
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

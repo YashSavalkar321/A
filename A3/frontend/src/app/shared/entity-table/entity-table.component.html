@@ -1,0 +1,97 @@
+<div class="entity-page">
+
+  <!-- Page Header -->
+  <div class="ent-page-header">
+    <div class="header-left">
+      <div class="header-icon-wrap">
+        <mat-icon>{{config.icon}}</mat-icon>
+      </div>
+      <div>
+        <h1 class="page-title">{{config.title}}</h1>
+        <span class="record-count">
+          {{dataSource.filteredData.length}} of {{dataSource.data.length}} record(s)
+        </span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button (click)="load()" matTooltip="Refresh data" class="refresh-btn">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button *ngIf="!readonly && canCreatePerm" mat-flat-button color="primary" (click)="openAdd()" class="add-btn">
+        <mat-icon>add</mat-icon> Add New
+      </button>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="ent-table-card">
+
+    <!-- Loading bar -->
+    <mat-progress-bar *ngIf="loading" mode="indeterminate" class="ent-loading-bar"></mat-progress-bar>
+
+    <!-- Toolbar: Search -->
+    <div class="ent-toolbar">
+      <div class="search-wrap">
+        <mat-icon class="search-icon">search</mat-icon>
+        <input class="search-input" [(ngModel)]="searchText" (input)="applyFilter()"
+               placeholder="Search records…" autocomplete="off">
+        <button *ngIf="searchText" class="search-clear" (click)="searchText=''; applyFilter()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <div class="toolbar-right" *ngIf="searchText">
+        <span class="filter-chip">
+          <mat-icon>filter_list</mat-icon>
+          Filtered: {{dataSource.filteredData.length}} result(s)
+        </span>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-scroll">
+      <table mat-table [dataSource]="dataSource" matSort class="ent-table">
+
+        <ng-container *ngFor="let col of config.columns" [matColumnDef]="col.key">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>{{col.label}}</th>
+          <td mat-cell *matCellDef="let row">
+            <ng-container [ngSwitch]="col.type">
+              <span *ngSwitchCase="'currency'" class="txt-currency">{{formatCell(row, col)}}</span>
+              <span *ngSwitchCase="'badge'" class="ent-badge" [class]="getBadgeClass(row[col.key])">{{row[col.key]}}</span>
+              <span *ngSwitchDefault class="txt-cell">{{row[col.key] ?? '—'}}</span>
+            </ng-container>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="col-actions">Actions</th>
+          <td mat-cell *matCellDef="let row" class="col-actions">
+            <button *ngIf="config.canEdit !== false && canUpdatePerm" mat-icon-button
+                    (click)="openEdit(row)" matTooltip="Edit record" class="btn-edit">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button *ngIf="canDeletePerm" mat-icon-button
+                    (click)="openDelete(row)" matTooltip="Delete record" class="btn-delete">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="ent-row"></tr>
+
+        <!-- No data -->
+        <tr class="mat-row" *matNoDataRow>
+          <td [attr.colspan]="displayedColumns.length" class="no-data-cell">
+            <div class="no-data-inner">
+              <mat-icon>{{searchText ? 'search_off' : 'table_rows'}}</mat-icon>
+              <p>{{searchText ? 'No records match "' + searchText + '"' : 'No records yet. Click Add New to get started.'}}</p>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <mat-paginator [pageSizeOptions]="[10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+  </div>
+</div>

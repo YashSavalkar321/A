@@ -1,0 +1,109 @@
+<div class="roles-page">
+
+  <!-- Page Header -->
+  <div class="roles-header">
+    <div class="header-left">
+      <div class="header-icon-wrap">
+        <mat-icon>admin_panel_settings</mat-icon>
+      </div>
+      <div>
+        <h1 class="page-title">Role Management</h1>
+        <span class="record-count">{{roles.length}} role(s)</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button mat-icon-button (click)="loadRoles()" matTooltip="Refresh">
+        <mat-icon>refresh</mat-icon>
+      </button>
+      <button mat-flat-button color="primary" (click)="openAdd()">
+        <mat-icon>add</mat-icon> New Role
+      </button>
+    </div>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+
+  <div class="roles-layout">
+
+    <!-- Roles List -->
+    <div class="roles-list-card">
+      <h3 class="section-title">Roles</h3>
+      <div class="role-item" *ngFor="let role of roles"
+           [class.selected]="selectedRole?.id === role.id"
+           (click)="selectRole(role)">
+        <div class="role-info">
+          <span class="role-name">
+            {{role.name}}
+            <mat-icon *ngIf="role.is_system" class="system-badge" matTooltip="System role (cannot be deleted)">lock</mat-icon>
+          </span>
+          <span class="role-desc">{{role.description || 'No description'}}</span>
+          <span class="role-users">{{role.user_count}} user(s)</span>
+        </div>
+        <div class="role-actions">
+          <button mat-icon-button (click)="openEdit(role); $event.stopPropagation()" matTooltip="Edit role">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button *ngIf="!role.is_system" mat-icon-button (click)="openDelete(role); $event.stopPropagation()" matTooltip="Delete role" class="btn-delete">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
+        </div>
+      </div>
+      <div *ngIf="roles.length === 0 && !loading" class="empty-state">
+        <mat-icon>folder_open</mat-icon>
+        <p>No roles found</p>
+      </div>
+    </div>
+
+    <!-- Permission Matrix -->
+    <div class="perm-card">
+      <ng-container *ngIf="selectedRole; else noRoleSelected">
+        <div class="perm-header">
+          <h3 class="section-title">Permissions for "{{selectedRole.name}}"</h3>
+          <button mat-flat-button color="primary" (click)="savePermissions()"
+                  [disabled]="!permDirty || permLoading">
+            <mat-icon>save</mat-icon> Save
+          </button>
+        </div>
+
+        <mat-progress-bar *ngIf="permLoading" mode="indeterminate"></mat-progress-bar>
+
+        <div class="perm-table-wrap" *ngIf="!permLoading">
+          <table class="perm-table">
+            <thead>
+              <tr>
+                <th class="resource-col">Resource</th>
+                <th *ngFor="let action of actions" class="action-col">
+                  <mat-checkbox
+                    [checked]="isAllChecked(action)"
+                    [indeterminate]="isSomeChecked(action)"
+                    (change)="toggleAll(action, $event)">
+                    {{actionLabels[action]}}
+                  </mat-checkbox>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let perm of permissions">
+                <td class="resource-col">
+                  <mat-icon class="resource-icon">{{getResourceIcon(perm.resource)}}</mat-icon>
+                  {{formatResource(perm.resource)}}
+                </td>
+                <td *ngFor="let action of actions" class="action-col">
+                  <mat-checkbox [(ngModel)]="perm[action]" (change)="onPermChange()"></mat-checkbox>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </ng-container>
+
+      <ng-template #noRoleSelected>
+        <div class="empty-state perm-empty">
+          <mat-icon>touch_app</mat-icon>
+          <p>Select a role to manage its permissions</p>
+        </div>
+      </ng-template>
+    </div>
+
+  </div>
+</div>

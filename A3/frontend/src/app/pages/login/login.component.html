@@ -1,0 +1,80 @@
+﻿<div class="login-wrap">
+
+  <!-- Animated Background -->
+  <div class="login-bg">
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+  </div>
+
+  <!-- Glass Card -->
+  <div class="login-card">
+
+    <!-- Left: Branding -->
+    <div class="lc-left">
+      <div class="lc-logo"><mat-icon>school</mat-icon></div>
+      <h2 class="lc-brand">UniMIS</h2>
+      <p class="lc-tagline">University Management<br>Information System</p>
+      <div class="lc-features">
+        <div class="lc-feat"><div class="lf-dot"></div><span>Academic &amp; course management</span></div>
+        <div class="lc-feat"><div class="lf-dot"></div><span>Student &amp; faculty records</span></div>
+        <div class="lc-feat"><div class="lf-dot"></div><span>Advanced scheduling &amp; reports</span></div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="lc-right">
+      <div class="lr-header">
+        <h1 class="lr-title">Welcome back</h1>
+        <p class="lr-sub">Sign in to your account to continue</p>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="login()" class="lr-form" autocomplete="off">
+
+        <div class="field-group">
+          <label class="field-label">Username</label>
+          <div class="field-input-wrap" [class.focused]="userFocus"
+               [class.invalid]="form.get('username')?.invalid && form.get('username')?.touched">
+            <mat-icon class="fi">person_outline</mat-icon>
+            <input class="field-input" formControlName="username" placeholder="Enter your username"
+                   autocomplete="username" (focus)="userFocus=true" (blur)="userFocus=false">
+          </div>
+          <span class="field-error" *ngIf="form.get('username')?.invalid && form.get('username')?.touched">Username is required</span>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Password</label>
+          <div class="field-input-wrap" [class.focused]="passFocus"
+               [class.invalid]="form.get('password')?.invalid && form.get('password')?.touched">
+            <mat-icon class="fi">lock_outline</mat-icon>
+            <input class="field-input" formControlName="password"
+                   [type]="hidePassword ? 'password' : 'text'"
+                   placeholder="Enter your password"
+                   autocomplete="current-password"
+                   (focus)="passFocus=true" (blur)="passFocus=false">
+            <button type="button" class="eye-btn" (click)="hidePassword = !hidePassword">
+              <mat-icon>{{hidePassword ? "visibility_off" : "visibility"}}</mat-icon>
+            </button>
+          </div>
+          <span class="field-error" *ngIf="form.get('password')?.invalid && form.get('password')?.touched">Password is required</span>
+        </div>
+
+        <button type="submit" class="btn-signin" [class.loading]="loading" [disabled]="form.invalid || loading">
+          <ng-container *ngIf="!loading"><mat-icon>login</mat-icon> Sign In</ng-container>
+          <ng-container *ngIf="loading"><mat-spinner diameter="20"></mat-spinner> Signing in…</ng-container>
+        </button>
+
+      </form>
+
+      <div class="lr-divider"><span>or</span></div>
+
+      <p class="lr-signup">New to UniMIS? <a [routerLink]="'/signup'" class="link-v">Create an account</a></p>
+
+      <div class="lr-hint">
+        <mat-icon>info_outline</mat-icon>
+        <span>Demo: <strong>admin</strong> / <strong>admin123</strong></span>
+      </div>
+    </div>
+
+  </div>
+</div>

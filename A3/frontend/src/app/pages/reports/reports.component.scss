@@ -1,0 +1,84 @@
+.reports-page { max-width: 1200px; }
+
+.page-header {
+  display: flex; align-items: center; margin-bottom: 24px;
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .page-icon {
+    font-size: 2.5rem !important; width: 2.5rem !important; height: 2.5rem !important;
+    color: #3f51b5; background: #e8eaf6; padding: 10px; border-radius: 12px;
+  }
+  h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #1a237e; }
+  p { margin: 0; color: #666; font-size: 0.85rem; }
+}
+
+.report-panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.panel {
+  border-radius: 12px !important;
+  mat-card-content { padding-top: 16px !important; }
+  button { margin-top: 8px; }
+}
+
+.full-width { width: 100%; }
+
+.loading-bar { margin-bottom: 16px; }
+
+.result-card {
+  border-radius: 12px !important;
+  mat-card-content { padding-top: 8px !important; }
+
+  .mat-mdc-card-header {
+    display: flex; align-items: center; flex-wrap: wrap;
+  }
+}
+
+.header-spacer { flex: 1 1 auto; }
+
+.export-actions {
+  display: flex; gap: 8px; margin-left: auto;
+}
+
+.export-btn {
+  display: inline-flex !important; align-items: center; gap: 5px;
+  font-weight: 700 !important; font-size: .82rem !important;
+  border-radius: 10px !important; padding: 0 14px !important;
+  min-height: 36px;
+  mat-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; }
+}
+.csv-btn {
+  color: #059669 !important; border-color: #059669 !important;
+  &:hover { background: rgba(5,150,105,.08) !important; }
+}
+.pdf-btn {
+  color: #dc2626 !important; border-color: #dc2626 !important;
+  &:hover { background: rgba(220,38,38,.08) !important; }
+}
+
+.col-chips {
+  display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 0;
+  mat-chip { font-size: 0.75rem; font-family: monospace; background: #e8eaf6 !important; }
+}
+
+mat-divider { margin-bottom: 12px; }
+
+.result-table-wrapper {
+  overflow-x: auto;
+  max-height: 480px;
+  overflow-y: auto;
+}
+
+.result-table {
+  width: 100%;
+  .mat-mdc-header-cell {
+    background: #f5f7ff; font-weight: 700; color: #3f51b5;
+    font-size: 0.8rem; text-transform: uppercase; font-family: monospace;
+    white-space: nowrap; position: sticky; top: 0; z-index: 5;
+  }
+  .mat-mdc-cell { font-size: 0.85rem; font-family: monospace; white-space: nowrap; }
+  .mat-mdc-row:hover { background: #f0f4ff !important; }
+}

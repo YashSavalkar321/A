@@ -1,0 +1,200 @@
+﻿<div class="signup-page">
+
+  <!-- ── Left Branding Panel -->
+  <div class="brand-panel">
+    <div class="bp-inner">
+      <div class="bp-logo"><mat-icon>school</mat-icon></div>
+      <div class="bp-tag">University Portal</div>
+      <h2 class="bp-headline">Shape Your<br>Academic<br>Journey</h2>
+      <p class="bp-sub">Join thousands of students and faculty on the University Management Information System.</p>
+
+      <div class="bp-progress">
+        <div class="bp-step" [class.active]="step()>=1" [class.done]="step()>1">
+          <div class="bp-step-dot"><mat-icon>{{step()>1 ? "check" : "person"}}</mat-icon></div>
+          <div class="bp-step-info"><span class="bp-step-title">Choose Role</span><span class="bp-step-desc">Student or Faculty</span></div>
+        </div>
+        <div class="bp-step-line"></div>
+        <div class="bp-step" [class.active]="step()>=2" [class.done]="step()>2">
+          <div class="bp-step-dot"><mat-icon>{{step()>2 ? "check" : "lock"}}</mat-icon></div>
+          <div class="bp-step-info"><span class="bp-step-title">Account</span><span class="bp-step-desc">Username & password</span></div>
+        </div>
+        <div class="bp-step-line"></div>
+        <div class="bp-step" [class.active]="step()>=3">
+          <div class="bp-step-dot"><mat-icon>badge</mat-icon></div>
+          <div class="bp-step-info"><span class="bp-step-title">Profile</span><span class="bp-step-desc">Your academic details</span></div>
+        </div>
+      </div>
+      <div class="bp-blob bp-blob-1"></div>
+      <div class="bp-blob bp-blob-2"></div>
+    </div>
+  </div>
+
+  <!-- ── Right Form Panel -->
+  <div class="form-panel">
+    <div class="fp-inner">
+
+      <div class="fp-nav">
+        <button *ngIf="step() > 1" class="back-btn" (click)="back()"><mat-icon>arrow_back</mat-icon> Back</button>
+        <span class="step-badge">Step {{step()}} of 3</span>
+      </div>
+
+      <!-- STEP 1: Role -->
+      <div class="step-view" *ngIf="step() === 1">
+        <div class="step-header">
+          <h1 class="step-title">Who are you?</h1>
+          <p class="step-sub">Choose your role. This determines your access level on the platform.</p>
+        </div>
+
+        <div class="role-grid">
+          <button type="button" class="role-card" [class.chosen]="selectedRole()==='student'" (click)="selectRole('student')">
+            <div class="rc-glow"></div>
+            <div class="rc-icon student-ic"><mat-icon>school</mat-icon></div>
+            <h3 class="rc-name">Student</h3>
+            <p class="rc-desc">Browse courses, view grades, track your academic progress and enrollment records.</p>
+            <ul class="rc-perms">
+              <li><mat-icon>check_circle</mat-icon> View course catalog</li>
+              <li><mat-icon>check_circle</mat-icon> See your enrollments</li>
+              <li><mat-icon>check_circle</mat-icon> Track academic records</li>
+            </ul>
+            <div class="rc-select-ring" *ngIf="selectedRole()==='student'"><mat-icon>check_circle</mat-icon></div>
+          </button>
+
+          <button type="button" class="role-card" [class.chosen]="selectedRole()==='faculty'" (click)="selectRole('faculty')">
+            <div class="rc-glow faculty-glow"></div>
+            <div class="rc-icon faculty-ic"><mat-icon>cast_for_education</mat-icon></div>
+            <h3 class="rc-name">Faculty</h3>
+            <p class="rc-desc">Manage your sections, teaching assignments, and student advisory relationships.</p>
+            <ul class="rc-perms">
+              <li><mat-icon>check_circle</mat-icon> Manage sections &amp; courses</li>
+              <li><mat-icon>check_circle</mat-icon> Record teaching assignments</li>
+              <li><mat-icon>check_circle</mat-icon> Advise students</li>
+            </ul>
+            <div class="rc-select-ring" *ngIf="selectedRole()==='faculty'"><mat-icon>check_circle</mat-icon></div>
+          </button>
+        </div>
+
+        <div class="admin-note">
+          <mat-icon>info_outline</mat-icon>
+          <span>Admin accounts are created by system administrators only and cannot be self-registered.</span>
+        </div>
+
+        <button class="btn-primary w-full" (click)="nextFromStep1()">Continue <mat-icon>arrow_forward</mat-icon></button>
+        <p class="auth-switch">Already have an account? <a routerLink="/login" class="link-v">Sign in</a></p>
+      </div>
+
+      <!-- STEP 2: Account -->
+      <div class="step-view" *ngIf="step() === 2">
+        <div class="step-header">
+          <h1 class="step-title">Create your account</h1>
+          <p class="step-sub">Choose a username and a strong password for your portal access.</p>
+        </div>
+
+        <form [formGroup]="accountForm" (ngSubmit)="nextFromStep2()" class="form-fields" autocomplete="off">
+          <div class="field-group">
+            <label class="field-label">Username <span class="req">*</span></label>
+            <div class="field-input-wrap" [class.focused]="focus['user']" [class.invalid]="f('username')?.invalid && f('username')?.touched">
+              <mat-icon class="fi">alternate_email</mat-icon>
+              <input class="field-input" formControlName="username" placeholder="e.g. john_doe" (focus)="focus['user']=true" (blur)="focus['user']=false">
+            </div>
+            <span class="field-error" *ngIf="f('username')?.touched && f('username')?.hasError('required')">Username is required</span>
+            <span class="field-error" *ngIf="f('username')?.touched && f('username')?.hasError('minlength')">Min. 3 characters</span>
+            <span class="field-error" *ngIf="f('username')?.touched && f('username')?.hasError('pattern')">No spaces allowed</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Password <span class="req">*</span></label>
+            <div class="field-input-wrap" [class.focused]="focus['pw']" [class.invalid]="f('password')?.invalid && f('password')?.touched">
+              <mat-icon class="fi">lock_outline</mat-icon>
+              <input class="field-input" formControlName="password" [type]="hidePassword ? 'password' : 'text'" placeholder="Min. 6 characters" (focus)="focus['pw']=true" (blur)="focus['pw']=false">
+              <button type="button" class="eye-btn" (click)="hidePassword=!hidePassword"><mat-icon>{{hidePassword ? "visibility_off" : "visibility"}}</mat-icon></button>
+            </div>
+            <span class="field-error" *ngIf="f('password')?.touched && f('password')?.hasError('required')">Password is required</span>
+            <span class="field-error" *ngIf="f('password')?.touched && f('password')?.hasError('minlength')">Min. 6 characters</span>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Confirm Password <span class="req">*</span></label>
+            <div class="field-input-wrap" [class.focused]="focus['cpw']" [class.invalid]="f('confirmPassword')?.touched && accountForm.hasError('mismatch')">
+              <mat-icon class="fi">lock</mat-icon>
+              <input class="field-input" formControlName="confirmPassword" [type]="hideConfirm ? 'password' : 'text'" placeholder="Repeat your password" (focus)="focus['cpw']=true" (blur)="focus['cpw']=false">
+              <button type="button" class="eye-btn" (click)="hideConfirm=!hideConfirm"><mat-icon>{{hideConfirm ? "visibility_off" : "visibility"}}</mat-icon></button>
+            </div>
+            <span class="field-error" *ngIf="f('confirmPassword')?.touched && accountForm.hasError('mismatch')">Passwords do not match</span>
+          </div>
+
+          <button type="submit" class="btn-primary w-full">Continue <mat-icon>arrow_forward</mat-icon></button>
+        </form>
+      </div>
+
+      <!-- STEP 3: Profile -->
+      <div class="step-view" *ngIf="step() === 3">
+        <div class="step-header">
+          <div class="step-role-chip" [class.chip-faculty]="selectedRole()==='faculty'">
+            <mat-icon>{{selectedRole()==="faculty" ? "cast_for_education" : "school"}}</mat-icon>
+            {{selectedRole() | titlecase}} Profile
+          </div>
+          <h1 class="step-title">Your academic details</h1>
+          <p class="step-sub">This info will be added to the {{selectedRole()==="faculty" ? "Instructors" : "Students"}} directory.</p>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="submit()" class="form-fields" autocomplete="off">
+          <div class="form-row">
+            <div class="field-group">
+              <label class="field-label">{{selectedRole()==="faculty" ? "Instructor" : "Student"}} ID <span class="req">*</span></label>
+              <div class="field-input-wrap" [class.focused]="focus['pid']" [class.invalid]="p('id')?.invalid && p('id')?.touched">
+                <mat-icon class="fi">badge</mat-icon>
+                <input class="field-input" formControlName="id" placeholder="5-digit ID e.g. 12345" (focus)="focus['pid']=true" (blur)="focus['pid']=false">
+              </div>
+              <span class="field-error" *ngIf="p('id')?.touched && p('id')?.invalid">5-digit numeric ID required</span>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label">Full Name <span class="req">*</span></label>
+              <div class="field-input-wrap" [class.focused]="focus['pname']" [class.invalid]="p('name')?.invalid && p('name')?.touched">
+                <mat-icon class="fi">person_outline</mat-icon>
+                <input class="field-input" formControlName="name" placeholder="Your full name" (focus)="focus['pname']=true" (blur)="focus['pname']=false">
+              </div>
+              <span class="field-error" *ngIf="p('name')?.touched && p('name')?.hasError('required')">Name is required</span>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label class="field-label">Department <span class="req">*</span></label>
+            <div class="field-input-wrap select-wrap" [class.focused]="focus['dept']" [class.invalid]="p('dept_name')?.invalid && p('dept_name')?.touched">
+              <mat-icon class="fi">business</mat-icon>
+              <select class="field-input field-select" formControlName="dept_name" (focus)="focus['dept']=true" (blur)="focus['dept']=false">
+                <option value="" disabled selected>Select department…</option>
+                <option *ngFor="let d of departments" [value]="d">{{d}}</option>
+              </select>
+              <mat-icon class="select-arrow">expand_more</mat-icon>
+            </div>
+            <span class="field-error" *ngIf="p('dept_name')?.touched && p('dept_name')?.hasError('required')">Department is required</span>
+          </div>
+
+          <div class="field-group" *ngIf="selectedRole()==='student'">
+            <label class="field-label">Total Credits Completed <span class="optional">(optional)</span></label>
+            <div class="field-input-wrap" [class.focused]="focus['cred']">
+              <mat-icon class="fi">stars</mat-icon>
+              <input class="field-input" type="number" formControlName="tot_cred" placeholder="0" min="0" max="999" (focus)="focus['cred']=true" (blur)="focus['cred']=false">
+            </div>
+          </div>
+
+          <div class="field-group" *ngIf="selectedRole()==='faculty'">
+            <label class="field-label">Annual Salary (USD) <span class="req">*</span></label>
+            <div class="field-input-wrap" [class.focused]="focus['sal']" [class.invalid]="p('salary')?.invalid && p('salary')?.touched">
+              <mat-icon class="fi">payments</mat-icon>
+              <input class="field-input" type="number" formControlName="salary" placeholder="e.g. 75000" min="29001" (focus)="focus['sal']=true" (blur)="focus['sal']=false">
+            </div>
+            <span class="field-error" *ngIf="p('salary')?.touched && p('salary')?.hasError('min')">Minimum salary is $29,001</span>
+          </div>
+
+          <button type="submit" class="btn-primary w-full" [class.loading]="loading" [disabled]="loading">
+            <ng-container *ngIf="!loading"><mat-icon>how_to_reg</mat-icon> Create Account</ng-container>
+            <ng-container *ngIf="loading"><mat-spinner diameter="20"></mat-spinner> Creating account…</ng-container>
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

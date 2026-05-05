@@ -1,0 +1,40 @@
+<div class="dashboard">
+
+  <!-- Hero Banner -->
+  <div class="hero-banner">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-content">
+      <div class="hero-icon"><mat-icon>dashboard</mat-icon></div>
+      <div>
+        <h1 class="hero-title">Welcome, {{username}}</h1>
+        <p class="hero-sub">Role: <strong>{{roleName | titlecase}}</strong> — Your personalized dashboard</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accessible Modules -->
+  <div class="section-header">
+    <span class="section-title">Your Modules</span>
+    <span class="section-badge">{{visibleLinks.length}} accessible</span>
+  </div>
+
+  <div class="quick-grid" *ngIf="visibleLinks.length; else noAccess">
+    <div *ngFor="let link of visibleLinks" class="quick-card" [routerLink]="link.route">
+      <div class="quick-icon">
+        <mat-icon>{{link.icon}}</mat-icon>
+      </div>
+      <span class="quick-label">{{link.label}}</span>
+      <mat-icon class="quick-chevron">chevron_right</mat-icon>
+    </div>
+  </div>
+
+  <ng-template #noAccess>
+    <div class="empty-state">
+      <mat-icon>lock</mat-icon>
+      <p>No modules have been assigned to your role yet.</p>
+      <p class="sub">Contact your administrator to get access to specific modules.</p>
+    </div>
+  </ng-template>
+
+</div>

@@ -1,0 +1,91 @@
+<div class="reports-page">
+  <div class="page-header">
+    <div class="header-left">
+      <mat-icon class="page-icon">bar_chart</mat-icon>
+      <div>
+        <h1>Generic Report Generator</h1>
+        <p>View any table data or run custom SELECT queries</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="report-panels">
+    <!-- Table Report -->
+    <mat-card class="panel">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>table_view</mat-icon>
+        <mat-card-title>Table Data Report</mat-card-title>
+        <mat-card-subtitle>Select any table to view all its data</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Select Table</mat-label>
+          <mat-select [(ngModel)]="selectedTable">
+            <mat-option *ngFor="let t of tables" [value]="t">{{t}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="runTableReport()" [disabled]="!selectedTable || loading">
+          <mat-icon>play_arrow</mat-icon> Run Report
+        </button>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Custom SQL -->
+    <mat-card class="panel" *ngIf="auth.isAdmin()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar>code</mat-icon>
+        <mat-card-title>Custom SQL Query</mat-card-title>
+        <mat-card-subtitle>Admin only — SELECT queries only</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>SQL Query</mat-label>
+          <textarea matInput [(ngModel)]="customSql" rows="4"
+                    placeholder="SELECT * FROM student WHERE dept_name = 'Comp. Sci.'"></textarea>
+        </mat-form-field>
+        <button mat-raised-button color="accent" (click)="runCustom()" [disabled]="!customSql.trim() || loading">
+          <mat-icon>play_circle</mat-icon> Execute
+        </button>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Results -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+
+  <mat-card *ngIf="result" class="result-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar>query_stats</mat-icon>
+      <mat-card-title>Query Results</mat-card-title>
+      <mat-card-subtitle>{{result.rows.length}} rows returned</mat-card-subtitle>
+      <span class="header-spacer"></span>
+      <div class="export-actions">
+        <button mat-stroked-button class="export-btn csv-btn" (click)="exportCSV()" matTooltip="Download as CSV">
+          <mat-icon>description</mat-icon> CSV
+        </button>
+        <button mat-stroked-button class="export-btn pdf-btn" (click)="exportPDF()" matTooltip="Download as PDF">
+          <mat-icon>picture_as_pdf</mat-icon> PDF
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Column chips -->
+      <div class="col-chips">
+        <mat-chip *ngFor="let c of result.columns">{{c}}</mat-chip>
+      </div>
+      <mat-divider></mat-divider>
+      <!-- Table -->
+      <div class="result-table-wrapper">
+        <table mat-table [dataSource]="dataSource" class="result-table">
+          <ng-container *ngFor="let col of displayedColumns" [matColumnDef]="col">
+            <th mat-header-cell *matHeaderCellDef>{{col}}</th>
+            <td mat-cell *matCellDef="let row">{{row[col] ?? '—'}}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+      </div>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

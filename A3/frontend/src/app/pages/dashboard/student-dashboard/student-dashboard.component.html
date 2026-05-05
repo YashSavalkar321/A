@@ -1,0 +1,204 @@
+<div class="dashboard">
+
+  <!-- ── Hero Banner ─────────────────────────────────────────────────────── -->
+  <div class="hero-banner student-hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-content">
+      <div class="hero-icon"><mat-icon>school</mat-icon></div>
+      <div>
+        <h1 class="hero-title">Student Portal</h1>
+        <p class="hero-sub" *ngIf="data?.profile">
+          {{data!.profile!.name}} &middot; {{data!.profile!.dept_name}} &middot; ID: {{data!.profile!.id}}
+        </p>
+        <p class="hero-sub hero-contact" *ngIf="data?.profile?.mobile_no || data?.profile?.address">
+          <span *ngIf="data!.profile!.mobile_no"><mat-icon class="inline-icon">phone</mat-icon> {{data!.profile!.mobile_no}}</span>
+          <span *ngIf="data!.profile!.address"><mat-icon class="inline-icon">location_on</mat-icon> {{data!.profile!.address}}</span>
+        </p>
+        <p class="hero-sub" *ngIf="!data?.profile && !loading">Your personal academic portal</p>
+      </div>
+    </div>
+    <button mat-flat-button class="hero-btn" [matMenuTriggerFor]="exportMenu" [disabled]="exporting">
+      <mat-icon>{{exporting ? 'hourglass_empty' : 'download'}}</mat-icon> {{exporting ? 'Exporting…' : 'Export Transcript'}}
+    </button>
+    <mat-menu #exportMenu="matMenu">
+      <button mat-menu-item (click)="exportReport('csv')"><mat-icon>description</mat-icon> Download CSV</button>
+      <button mat-menu-item (click)="exportReport('pdf')"><mat-icon>picture_as_pdf</mat-icon> Download PDF</button>
+    </mat-menu>
+  </div>
+
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+  <div *ngIf="error" class="error-msg"><mat-icon>error</mat-icon> {{error}}</div>
+
+  <ng-container *ngIf="data">
+
+    <!-- ── Summary Cards ───────────────────────────────────────────────── -->
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#7c3aed,#a855f7)"><mat-icon>school</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.academicProgress.completedCredits}}</div>
+          <div class="summary-label">Credits Earned</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#0891b2,#06b6d4)"><mat-icon>grade</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{gpa}}</div>
+          <div class="summary-label">GPA</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#059669,#10b981)"><mat-icon>menu_book</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.academicProgress.totalCoursesTaken}}</div>
+          <div class="summary-label">Courses Taken</div>
+        </div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-icon" style="--card-gradient: linear-gradient(135deg,#d97706,#f59e0b)"><mat-icon>pending</mat-icon></div>
+        <div class="summary-body">
+          <div class="summary-value">{{data.academicProgress.coursesInProgress}}</div>
+          <div class="summary-label">In Progress</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Academic Progress Bar ───────────────────────────────────────── -->
+    <div class="progress-card">
+      <div class="progress-header">
+        <span class="progress-title"><mat-icon>trending_up</mat-icon> Degree Progress</span>
+        <span class="progress-pct">{{data.academicProgress.progressPercent}}%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="data.academicProgress.progressPercent"></div>
+      </div>
+      <div class="progress-meta">
+        <span>{{data.academicProgress.completedCredits}} / {{data.academicProgress.totalCreditsRequired}} credits</span>
+        <span *ngIf="data.advisor">Advisor: <strong>{{data.advisor.advisor_name}}</strong> ({{data.advisor.dept_name}})</span>
+      </div>
+    </div>
+
+    <!-- ── Tabs ────────────────────────────────────────────────────────── -->
+    <mat-tab-group animationDuration="200ms" class="dash-tabs">
+
+      <!-- TAB: Timetable -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>calendar_today</mat-icon>&nbsp;Timetable
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="sortedTimetable.length; else noTimetable">
+            <table mat-table [dataSource]="sortedTimetable" class="dash-table">
+              <ng-container matColumnDef="day">
+                <th mat-header-cell *matHeaderCellDef>Day</th>
+                <td mat-cell *matCellDef="let r"><span class="day-chip">{{dayName(r.day)}}</span></td>
+              </ng-container>
+              <ng-container matColumnDef="time">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let r">{{r.start_time}} – {{r.end_time}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_id">
+                <th mat-header-cell *matHeaderCellDef>Course</th>
+                <td mat-cell *matCellDef="let r">{{r.course_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let r">{{r.course_title}}</td>
+              </ng-container>
+              <ng-container matColumnDef="room">
+                <th mat-header-cell *matHeaderCellDef>Room</th>
+                <td mat-cell *matCellDef="let r">{{r.building}} {{r.room_number}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="timetableCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: timetableCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noTimetable>
+            <div class="empty-state"><mat-icon>event_busy</mat-icon><span>No timetable entries found</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+      <!-- TAB: Marksheet -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>assignment</mat-icon>&nbsp;Marksheet
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="data.marksheet.length; else noMarksheet">
+            <table mat-table [dataSource]="data.marksheet" class="dash-table">
+              <ng-container matColumnDef="course_id">
+                <th mat-header-cell *matHeaderCellDef>Course</th>
+                <td mat-cell *matCellDef="let r">{{r.course_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let r">{{r.course_title}}</td>
+              </ng-container>
+              <ng-container matColumnDef="credits">
+                <th mat-header-cell *matHeaderCellDef>Credits</th>
+                <td mat-cell *matCellDef="let r">{{r.credits}}</td>
+              </ng-container>
+              <ng-container matColumnDef="semester_year">
+                <th mat-header-cell *matHeaderCellDef>Semester</th>
+                <td mat-cell *matCellDef="let r">{{r.semester}} {{r.year}}</td>
+              </ng-container>
+              <ng-container matColumnDef="grade">
+                <th mat-header-cell *matHeaderCellDef>Grade</th>
+                <td mat-cell *matCellDef="let r">
+                  <span class="grade-chip" [class.pending]="!r.grade">{{r.grade || 'In Progress'}}</span>
+                </td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="marksheetCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: marksheetCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noMarksheet>
+            <div class="empty-state"><mat-icon>assignment_late</mat-icon><span>No course records found</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+      <!-- TAB: Current Enrollments / Upcoming Classes -->
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <mat-icon>upcoming</mat-icon>&nbsp;Upcoming Classes
+        </ng-template>
+        <div class="tab-body">
+          <div class="table-card" *ngIf="data.currentEnrollments.length; else noCurrent">
+            <table mat-table [dataSource]="data.currentEnrollments" class="dash-table">
+              <ng-container matColumnDef="course_id">
+                <th mat-header-cell *matHeaderCellDef>Course</th>
+                <td mat-cell *matCellDef="let r">{{r.course_id}}</td>
+              </ng-container>
+              <ng-container matColumnDef="course_title">
+                <th mat-header-cell *matHeaderCellDef>Title</th>
+                <td mat-cell *matCellDef="let r">{{r.course_title}}</td>
+              </ng-container>
+              <ng-container matColumnDef="day">
+                <th mat-header-cell *matHeaderCellDef>Day</th>
+                <td mat-cell *matCellDef="let r"><span class="day-chip">{{dayName(r.day)}}</span></td>
+              </ng-container>
+              <ng-container matColumnDef="time">
+                <th mat-header-cell *matHeaderCellDef>Time</th>
+                <td mat-cell *matCellDef="let r">{{r.start_time}} – {{r.end_time}}</td>
+              </ng-container>
+              <ng-container matColumnDef="room">
+                <th mat-header-cell *matHeaderCellDef>Room</th>
+                <td mat-cell *matCellDef="let r">{{r.building}} {{r.room_number}}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="currentCols"></tr>
+              <tr mat-row *matRowDef="let row; columns: currentCols;"></tr>
+            </table>
+          </div>
+          <ng-template #noCurrent>
+            <div class="empty-state"><mat-icon>check_circle</mat-icon><span>No in-progress enrollments</span></div>
+          </ng-template>
+        </div>
+      </mat-tab>
+
+    </mat-tab-group>
+
+  </ng-container>
+</div>

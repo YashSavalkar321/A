@@ -1,0 +1,61 @@
+﻿<div class="dashboard">
+
+  <!-- ── Welcome Hero ───────────────────────────────────────────────────────── -->
+  <div class="hero-banner">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-content">
+      <div class="hero-icon"><mat-icon>school</mat-icon></div>
+      <div>
+        <h1 class="hero-title">Welcome to UniMIS</h1>
+        <p class="hero-sub">University Management Information System — real-time overview</p>
+      </div>
+    </div>
+    <button mat-flat-button [routerLink]="'/reports'" class="hero-btn">
+      <mat-icon>bar_chart</mat-icon> View Reports
+    </button>
+  </div>
+
+  <!-- Loading bar -->
+  <mat-progress-bar *ngIf="loading" mode="indeterminate" class="loading-bar"></mat-progress-bar>
+
+  <!-- ── KPI Cards ─────────────────────────────────────────────────────────── -->
+  <div class="section-header">
+    <span class="section-title">Key Metrics</span>
+    <span class="section-badge">Live Data</span>
+  </div>
+
+  <div class="kpi-grid">
+    <div *ngFor="let card of cards" class="kpi-card" [routerLink]="card.route"
+         [style.--card-gradient]="card.gradient"
+         [style.--card-color]="card.color">
+      <div class="kpi-icon-wrap">
+        <mat-icon>{{card.icon}}</mat-icon>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-value">{{getStatValue(card.key) | number}}</div>
+        <div class="kpi-label">{{card.label}}</div>
+      </div>
+      <div class="kpi-arrow">
+        <mat-icon>arrow_forward_ios</mat-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quick Access ──────────────────────────────────────────────────────── -->
+  <div class="section-header" style="margin-top: 8px;">
+    <span class="section-title">Quick Access</span>
+    <span class="section-badge">{{quickLinks.length}} modules</span>
+  </div>
+
+  <div class="quick-grid">
+    <div *ngFor="let link of quickLinks" class="quick-card" [routerLink]="link.route">
+      <div class="quick-icon">
+        <mat-icon>{{link.icon}}</mat-icon>
+      </div>
+      <span class="quick-label">{{link.label}}</span>
+      <mat-icon class="quick-chevron">chevron_right</mat-icon>
+    </div>
+  </div>
+
+</div>

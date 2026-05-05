@@ -1,0 +1,53 @@
+.users-page { max-width: 900px; }
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;
+  .header-left { display: flex; align-items: center; gap: 14px; }
+  .page-icon {
+    font-size: 2.5rem !important; width: 2.5rem !important; height: 2.5rem !important;
+    color: #3f51b5; background: #e8eaf6; padding: 10px; border-radius: 12px;
+  }
+  h1 { margin: 0; font-size: 1.5rem; font-weight: 700; color: #1a237e; }
+  .record-count { font-size: 0.8rem; color: #888; }
+}
+
+.table-card { border-radius: 12px !important; overflow: hidden; padding: 0; }
+
+.toolbar { display: flex; align-items: center; gap: 12px; padding: 16px 16px 0; }
+
+.search-field { flex: 1; max-width: 400px; }
+
+.table-container { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+
+.users-table {
+  width: 100%;
+  .mat-mdc-header-cell { background: #f5f7ff; font-weight: 700; color: #3f51b5; font-size: 0.82rem; }
+  .table-row:hover { background: #f0f4ff !important; }
+}
+
+.user-cell { display: flex; align-items: center; gap: 10px; }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: #3f51b5; color: white;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 0.85rem;
+}
+
+.role-chip {
+  display: inline-block; padding: 3px 12px;
+  border-radius: 12px; font-size: 0.75rem; font-weight: 600; text-transform: capitalize;
+  &.admin    { background: #ffebee; color: #c62828; }
+  &.faculty  { background: #fff8e1; color: #f57f17; }
+  &.student  { background: #e8f5e9; color: #2e7d32; }
+}
+
+.actions-header, .actions-cell { width: 100px; text-align: center !important; }
+
+.no-data {
+  text-align: center; padding: 48px; color: #999;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+  mat-icon { font-size: 3rem !important; width: 3rem !important; height: 3rem !important; opacity: 0.4; }
+}
+
+mat-paginator { border-top: 1px solid #eee; }
